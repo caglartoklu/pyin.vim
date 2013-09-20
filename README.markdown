@@ -87,6 +87,9 @@ Try this code, which would be more useful:
         print "  i:", i
 
 
+![PyinvimExecuteAndAppend1](https://github.com/caglartoklu/pyin.vim/blob/media/images/pyinvim_executeappend.png)
+
+
 ### Example3
 Let's say we have this one, and we want to execute the
 3 lines of code inside the `while` loop.
