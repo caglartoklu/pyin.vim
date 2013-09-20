@@ -87,7 +87,7 @@ Try this code, which would be more useful:
         print "  i:", i
 
 
-![PyinvimExecuteAndAppend1](https://github.com/caglartoklu/pyin.vim/blob/media/images/pyinvim_executeappend.png)
+![PyinvimExecuteAndAppend1](https://raw.github.com/caglartoklu/pyin.vim/media/images/pyinvim_executeappend.png)
 
 
 ### Example3
