@@ -1,6 +1,10 @@
-" pyin.vim
-" https://github.com/caglartoklu/pyin.vim
-
+" -*- vim -*-
+" FILE: pyin.vim
+" PLUGINTYPE: plugin
+" DESCRIPTION: Executes Python code in Vim buffers and insert its output.
+" HOMEPAGE: https://github.com/caglartoklu/pyin.vim
+" LICENSE: https://github.com/caglartoklu/pyin.vim/blob/master/LICENSE
+" AUTHOR: caglartoklu
 
 if exists('g:loaded_python_inline') || &cp
     " If it already loaded, do not load it again.
