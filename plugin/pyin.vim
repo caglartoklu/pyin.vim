@@ -6,6 +6,7 @@
 " LICENSE: https://github.com/caglartoklu/pyin.vim/blob/master/LICENSE
 " AUTHOR: caglartoklu
 
+
 if exists('g:loaded_python_inline') || &cp
     " If it already loaded, do not load it again.
     finish
@@ -49,6 +50,20 @@ function! s:SetPyinvimSettings()
     if !exists('g:pyinvim_left_align')
         let g:pyinvim_left_align = 1
     endif
+
+    " the lines that will be added before the user source code.
+    " it can be any valid Python source code,
+    " but these will be probably 'import' statemets.
+    if !exists('g:pyinvim_before_lines')
+        let g:pyinvim_before_lines = []
+    endif
+
+    " any code that will be added after the user source code.
+    " it can be any valid Python source code.
+    if !exists('g:pyinvim_after_lines')
+        let g:pyinvim_after_lines = []
+    endif
+
 endfunction
 
 
@@ -147,16 +162,39 @@ function! s:LeftAlign(codeAsList)
 endfunction
 
 
-function! s:RunPythonCode(codeAsList)
+function! s:OneLine(oneLine)
+    " Make sure that the line is stripped first.
+    " Then, adds a new line character to this line.
+    " :help expr-quote
+    let oneLine2 = s:Strip(a:oneLine) . "\r"
+    return oneLine2
+endfunction
+
+
+function! s:OneLineEachItem(someList)
+    " Make sure that each line is stripped first.
+    " Then, adds a new line character to this line.
+    " a:someList is the code as a list.
+    let resultList = []
+    for item in a:someList
+        let item2 = s:OneLine(item)
+        call add(resultList, item2)
+    endfor
+    return resultList
+endfunction
+
+
+function! pyin#RunPythonCode(codeAsList)
     " Writes the a:codeAsList to the tempSourceFileName,
     " runs it with the Python interpreter, and
     " returns the output as a list.
     let tempSourceFileName = s:GetTempFileNameForSource()
 
-    let codeAsList2 = a:codeAsList
+    " let codeAsList2 = a:codeAsList
     if g:pyinvim_left_align == 1
         let codeAsList2 = s:LeftAlign(a:codeAsList)
     endif
+    let codeAsList2 = s:OneLineEachItem(g:pyinvim_before_lines) + codeAsList2 + s:OneLineEachItem(g:pyinvim_after_lines)
 
     call writefile(codeAsList2, tempSourceFileName)
     let fullCommand = g:pyinvim_interpreter . ' ' . g:pyinvim_interpreter_options . ' ' . tempSourceFileName
@@ -178,7 +216,7 @@ function! s:ExecuteAndAppendPython(lineStart, lineFinish)
     " Execute the selection with the Python interpreter,
     " and append the output to the text editing area.
     let codeAsList = getline(a:lineStart, a:lineFinish)
-    let outputAsList = s:RunPythonCode(codeAsList)
+    let outputAsList = pyin#RunPythonCode(codeAsList)
     call append(a:lineFinish, outputAsList)
     " Decho outputAsList
 endfunction
@@ -188,7 +226,7 @@ function! s:ExecuteAndReplacePython(lineStart, lineFinish)
     " Execute the selection with the Python interpreter,
     " and replace the selection with the output of the code.
     let codeAsList = getline(a:lineStart, a:lineFinish)
-    let outputAsList = s:RunPythonCode(codeAsList)
+    let outputAsList = pyin#RunPythonCode(codeAsList)
     " Decho outputAsList
 
     " We are doing a replace, so delete the previous code lines.
