@@ -25,25 +25,20 @@ Home page:
 
 ## Changelog
 
-- 2015-10-05
-  - Added `g:pyinvim_before_lines` and `g:pyinvim_after_lines` options.
-  - `pyin#RunPythonCode()` is now a common function that can be called from other scripts.
-
-- 2013-09-20
-  - First version.
+See the change log from [git commits](https://github.com/caglartoklu/pyin.vim/commits/master).
 
 
 ## Installation
 
 For [Vundle](https://github.com/VundleVim/Vundle.vim) users:
 
-```
+```viml
 Plugin 'caglartoklu/pyin.vim'
 ```
 
 For [Pathogen](https://github.com/tpope/vim-pathogen) users:
 
-```
+```bat
 cd ~/.vim/bundle
 git clone git://github.com/caglartoklu/pyin.vim
 ```
@@ -53,11 +48,11 @@ For all other users, simply drop the `pyin.vim` file to your
 
 
 ## Supported Environments
-- Vim (no `+Python` required)
-- Python (aka CPython, default)
-- IronPython
-- Jython
-- Tested on Windows 7 and Ubuntu 12.04 LTS
+- [Vim](http://www.vim.org/) (no `+Python` required)
+- [Python](https://www.python.org/) (aka CPython, default)
+- [IronPython](http://ironpython.net/)
+- [Jython](http://www.jython.org/)
+- Tested on Windows 8
 
 
 ## Usage
@@ -139,7 +134,7 @@ with success.
 ### Example4
 First, execute this command:
 
-```
+```viml
 let g:pyinvim_interpreter='C:\bin\IronPython\ipy.exe'
 ```
 
@@ -170,7 +165,7 @@ Python interpreters such as `ipy.exe`.
 default: `'python'`, which assumes that `python` command is defined
 on the `PATH` variable.
 
-```
+```viml
 let g:pyinvim_interpreter = 'python'
 ```
 
@@ -178,7 +173,7 @@ let g:pyinvim_interpreter = 'python'
 Any extra options to be passed to the Python interpreter.
 default: `''`.
 
-```
+```viml
 let g:pyinvim_interpreter_options = ''
 ```
 
@@ -187,7 +182,7 @@ Since this plugin creates temp files, this options makes sure it
 gets deleted.
 default: `1`.
 
-```
+```viml
 let g:pyinvim_delete_temp_files = 1
 ```
 
@@ -196,7 +191,7 @@ Removes unnecessary leading whitespace to prevent errors raised
 by the Python interpreter.
 default: `1`.
 
-```
+```viml
 let g:pyinvim_left_align = 1
 ```
 
@@ -205,16 +200,23 @@ List of lines that will be added to the top of the Python code to be executed.
 Frequently used import statements can be used here.
 These lines are added before the user code.
 
-```
-let g:pyinvim_before_lines = ['import os', 'import pprint', 'pp = pprint.PrettyPrinter(depth=6)']
+```viml
+let pyinvim_before_lines = []
+call add(pyinvim_before_lines, '# -*- coding: utf-8 -*-')
+call add(pyinvim_before_lines, 'import os')
+call add(pyinvim_before_lines, 'import pprint')
+call add(pyinvim_before_lines, 'pp = pprint.PrettyPrinter(depth=6)')
+let g:pyinvim_before_lines = pyinvim_before_lines
 ```
 
 ### `g:pyinvim_after_lines`
 List of lines that will be added to the bottom of the Python code to be executed.
 These lines are added after the user code.
 
-```
-let g:pyinvim_after_lines = ['print "# done"']
+```viml
+let pyinvim_after_lines = []
+call add (pyinvim_after_lines, 'print "# done"')
+let g:pyinvim_after_lines = pyinvim_after_lines
 ```
 
 ### `g:pyinvim_gotolinewhendone`
@@ -227,6 +229,31 @@ let g:pyinvim_gotolinewhendone = 'finish'
 let g:pyinvim_gotolinewhendone = '10'
 ```
 
+### Example vimrc configuration
+
+```viml
+" { Plugin 'caglartoklu/pyin.vim'
+    let g:pyinvim_interpreter = 'python'
+    " let g:pyinvim_interpreter = 'C:\Python27\python.exe'
+    " let g:pyinvim_interpreter = 'C:\bin\IronPython\ipy.exe'
+    let g:pyinvim_interpreter_options = ''
+    let g:pyinvim_delete_temp_files = 0
+    let g:pyinvim_left_align = 1
+
+    let pyinvim_before_lines = []
+    call add(pyinvim_before_lines, '# -*- coding: utf-8 -*-')
+    call add(pyinvim_before_lines, 'import os')
+    call add(pyinvim_before_lines, 'import pprint')
+    call add(pyinvim_before_lines, 'pp = pprint.PrettyPrinter(depth=6)')
+    let g:pyinvim_before_lines = pyinvim_before_lines
+
+    let pyinvim_after_lines = []
+    call add (pyinvim_after_lines, 'print "# done"')
+    let g:pyinvim_after_lines = pyinvim_after_lines
+
+    let g:pyinvim_gotolinewhendone = 'start'
+" }
+```
 
 ## License
 Licensed with
