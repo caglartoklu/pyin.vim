@@ -56,7 +56,7 @@ For all other users, simply drop the `pyin.vim` file to your
 
 
 ## Usage
-This plugin defines two commands:
+This plugin defines two main commands:
 
 - `PyinvimExecuteAndAppend`
    takes the Python code, runs it, and appends its output to the buffer.
@@ -256,8 +256,7 @@ let g:pyinvim_gotolinewhendone = '10'
 ```
 
 ## License
-Licensed with
-[2-clause license](https://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29)
-("Simplified BSD License" or "FreeBSD License").
+
+Licensed under the Apache License, Version 2.0.
 See the
-[LICENSE](https://github.com/caglartoklu/ftcolor.vim/blob/master/LICENSE) file.
+[LICENSE](https://github.com/caglartoklu/pyin.vim/blob/master/LICENSE) file.
