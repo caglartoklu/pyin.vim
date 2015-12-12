@@ -208,6 +208,38 @@ function! pyin#RunPythonCode(codeAsList)
     " let fullCommand = shellescape(fullCommand)
     " Decho fullCommand
     let output = system(fullCommand)
+    " TODO: 5 check whether this is \n for all file types (Windows, Mac, Linux)
+    let outputAsList = split(output, "\n")
+
+    if g:pyinvim_delete_temp_files == 1
+        " Remove the temp source file.
+        call delete(tempSourceFileName)
+    endif
+
+    return outputAsList
+endfunction
+
+
+function! pyin#RunPythonCodePlain(codeAsList)
+    " Writes the a:codeAsList to the tempSourceFileName,
+    " runs it with the Python interpreter, and
+    " returns the output as a list.
+    " Unlike pyin#RunPythonCode, pyin#RunPythonCodePlain does not add before and after lines.
+    " TODO: 5 pyin#RunPythonCode and pyin#RunPythonCodePlain has common parts, extract them.
+    let tempSourceFileName = s:GetTempFileNameForSource()
+
+    " let codeAsList2 = a:codeAsList
+    if g:pyinvim_left_align == 1
+        let codeAsList2 = s:LeftAlign(a:codeAsList)
+    endif
+    " Unlike pyin#RunPythonCode, pyin#RunPythonCodePlain does not execute the following lines:
+    " let codeAsList2 = s:OneLineEachItem(g:pyinvim_before_lines) + codeAsList2 + s:OneLineEachItem(g:pyinvim_after_lines)
+
+    call writefile(codeAsList2, tempSourceFileName)
+    let fullCommand = g:pyinvim_interpreter . ' ' . g:pyinvim_interpreter_options . ' ' . tempSourceFileName
+    " let fullCommand = shellescape(fullCommand)
+    " Decho fullCommand
+    let output = system(fullCommand)
     let outputAsList = split(output, "\n")
 
     if g:pyinvim_delete_temp_files == 1
