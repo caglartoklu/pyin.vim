@@ -23,12 +23,12 @@ Home page:
 [https://github.com/caglartoklu/pyin.vim](https://github.com/caglartoklu/pyin.vim)
 
 
-## Changelog
+# Changelog
 
 See the change log from [git commits](https://github.com/caglartoklu/pyin.vim/commits/master).
 
 
-## Installation
+# Installation
 
 For [Vundle](https://github.com/VundleVim/Vundle.vim) users:
 
@@ -55,7 +55,7 @@ For all other users, simply drop the `pyin.vim` file to your
 - Tested on Windows 8
 
 
-## Usage
+# Usage
 This plugin defines two main commands:
 
 - `PyinvimExecuteAndAppend`
@@ -65,7 +65,7 @@ This plugin defines two main commands:
    its output.
 
 
-### Example1
+## Example1
 Let's say we have a buffer with this text.
 
 ```python
@@ -86,7 +86,7 @@ It can be anything, text, rst, or even any other programming
 language, such as Java. The only important thing is, just text.
 
 
-### Example2
+## Example2
 Try this code, which would be more useful:
 
 ```python
@@ -97,7 +97,7 @@ for i in range(6):
 ![PyinvimExecuteAndAppend1](https://raw.github.com/caglartoklu/pyin.vim/media/images/pyinvim_executeappend.png)
 
 
-### Example3
+## Example3
 Let's say we have this one, and we want to execute the
 3 lines of code inside the `while` loop.
 
@@ -131,7 +131,7 @@ print "3"     # indent level: 0
 with success.
 
 
-### Example4
+## Example4
 First, execute this command:
 
 ```viml
@@ -158,8 +158,8 @@ ddd
 ```
 
 
-## Configuration
-### `g:pyinvim_interpreter`
+# Configuration
+## `g:pyinvim_interpreter`
 The path to the Python interpreter. It can be full path to various
 Python interpreters such as `ipy.exe`.
 default: `'python'`, which assumes that `python` command is defined
@@ -169,7 +169,7 @@ on the `PATH` variable.
 let g:pyinvim_interpreter = 'python'
 ```
 
-### `g:pyinvim_interpreter_options`
+## `g:pyinvim_interpreter_options`
 Any extra options to be passed to the Python interpreter.
 default: `''`.
 
@@ -177,7 +177,7 @@ default: `''`.
 let g:pyinvim_interpreter_options = ''
 ```
 
-### `g:pyinvim_delete_temp_files`
+## `g:pyinvim_delete_temp_files`
 Since this plugin creates temp files, this options makes sure it
 gets deleted.
 default: `1`.
@@ -195,7 +195,7 @@ default: `1`.
 let g:pyinvim_left_align = 1
 ```
 
-### `g:pyinvim_before_lines`
+## `g:pyinvim_before_lines`
 List of lines that will be added to the top of the Python code to be executed.
 Frequently used import statements can be used here.
 These lines are added before the user code.
@@ -209,7 +209,7 @@ call add(pyinvim_before_lines, 'pp = pprint.PrettyPrinter(depth=6)')
 let g:pyinvim_before_lines = pyinvim_before_lines
 ```
 
-### `g:pyinvim_after_lines`
+## `g:pyinvim_after_lines`
 List of lines that will be added to the bottom of the Python code to be executed.
 These lines are added after the user code.
 
@@ -219,7 +219,7 @@ call add (pyinvim_after_lines, 'print "# done"')
 let g:pyinvim_after_lines = pyinvim_after_lines
 ```
 
-### `g:pyinvim_gotolinewhendone`
+## `g:pyinvim_gotolinewhendone`
 The line number or indicator that will be used after running the code.
 Some examples are:
 
@@ -229,7 +229,7 @@ let g:pyinvim_gotolinewhendone = 'finish'
 let g:pyinvim_gotolinewhendone = '10'
 ```
 
-### Example vimrc configuration
+## Example vimrc configuration
 
 ```viml
 " { Plugin 'caglartoklu/pyin.vim'
@@ -255,7 +255,39 @@ let g:pyinvim_gotolinewhendone = '10'
 " }
 ```
 
-## License
+# Guide
+
+## How to see the Python file?
+In some cases (for debugging purposes most of the time),
+you would need to see the final Python file that has been sent to the interpreter.
+
+First things first, make sure you have the following line in your `VIMRC`:
+
+```viml
+let g:pyinvim_delete_temp_files = 0
+```
+
+If you don't have it, add it and restart vim so that the setting is read.
+
+Then, you can raise a simple exception by executing the following code snippet:
+
+```python
+print 1/0
+```
+
+The output of the Python interpreter will be seen in the buffer with the full path to the file:
+
+```
+Traceback (most recent call last):
+  File "C:\Users\user1\AppData\Local\Temp\VIM4108.tmp", line 5, in <module>
+    print 1/0
+ZeroDivisionError: integer division or modulo by zero
+```
+
+Simply browse to the temp diretory and inspect the file.
+
+
+# License
 
 Licensed under the Apache License, Version 2.0.
 See the
