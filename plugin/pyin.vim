@@ -64,6 +64,13 @@ function! s:SetPyinvimSettings()
         let g:pyinvim_after_lines = []
     endif
 
+    " includes the line number to place the cursor
+    " when the operation is done.
+    " possible values:
+    " start, finish, 1, 2, 5 etc
+    if !exists('g:pyinvim_gotolinewhendone')
+        let g:pyinvim_gotolinewhendone = 'start'
+    endif
 endfunction
 
 
@@ -212,13 +219,34 @@ function! pyin#RunPythonCode(codeAsList)
 endfunction
 
 
+function! s:GotoLine(lineStart2, lineFinish2)
+    " Moves the cursor to the preferred line when the operation is done.
+    " Driven by the g:pyinvim_gotolinewhendone setting.
+    if exists('g:pyinvim_gotolinewhendone')
+        if g:pyinvim_gotolinewhendone == ''
+            " do nothing.
+        elseif g:pyinvim_gotolinewhendone == 'start'
+            execute 'normal! ' . a:lineStart2 . 'gg'
+        elseif g:pyinvim_gotolinewhendone == 'finish'
+            execute 'normal! ' . a:lineFinish2 . 'gg'
+        else
+            execute 'normal! ' . g:pyinvim_gotolinewhendone . 'gg'
+        endif
+    endif
+endfunction
+
+
 function! s:ExecuteAndAppendPython(lineStart, lineFinish)
     " Execute the selection with the Python interpreter,
     " and append the output to the text editing area.
     let codeAsList = getline(a:lineStart, a:lineFinish)
     let outputAsList = pyin#RunPythonCode(codeAsList)
     call append(a:lineFinish, outputAsList)
-    " Decho outputAsList
+
+    let lineStart2 = a:lineStart
+    " the last line of the final state when the operation is done.
+    let lineFinish2 = a:lineStart + len(codeAsList) + len(outputAsList)
+    call s:GotoLine(lineStart2, lineFinish2)
 endfunction
 
 
@@ -235,6 +263,11 @@ function! s:ExecuteAndReplacePython(lineStart, lineFinish)
     execute deletionCommand
 
     call append(a:lineStart - 1, outputAsList)
+
+    let lineStart2 = a:lineStart
+    " the last line of the final state when the operation is done.
+    let lineFinish2 = a:lineStart + len(outputAsList)
+    call s:GotoLine(lineStart2, lineFinish2)
 endfunction
 
 

@@ -217,6 +217,16 @@ These lines are added after the user code.
 let g:pyinvim_after_lines = ['print "# done"']
 ```
 
+### `g:pyinvim_gotolinewhendone`
+The line number or indicator that will be used after running the code.
+Some examples are:
+
+```viml
+let g:pyinvim_gotolinewhendone = 'start'
+let g:pyinvim_gotolinewhendone = 'finish'
+let g:pyinvim_gotolinewhendone = '10'
+```
+
 
 ## License
 Licensed with
