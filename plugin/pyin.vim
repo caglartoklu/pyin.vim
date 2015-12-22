@@ -115,10 +115,64 @@ function! s:Right(haystack, needleLength)
 endfunction
 
 
-function! s:Strip(input_string)
+function! s:Strip(haystack)
     " Strips (or trims) leading and trailing whitespace.
     " http://stackoverflow.com/a/4479072
-    return substitute(a:input_string, '^\s*\(.\{-}\)\s*$', '\1', '')
+    " return substitute(a:haystack, '^\s*\(.\{-}\)\s*$', '\1', '')
+    return s:LStrip(s:RStrip(a:haystack))
+endfunction
+
+
+function! s:LStrip(haystack)
+    let result = ''
+    let len = strlen(a:haystack)
+    let i = 0
+    let stripping_done = 0
+    while i < len
+        let ch = strpart(a:haystack, i, 1)
+        let ch2 = ch
+        if stripping_done == 0
+            if ch == "\t"
+                let ch2 = ''
+            elseif ch == ' '
+                let ch2 = ''
+            else
+                let stripping_done = 1
+            endif
+        endif
+        let result = result . ch2
+        let i = i + 1
+    endwhile
+    return result
+endfunction
+
+
+function! s:RStrip(haystack)
+    let result = ''
+    let len = strlen(a:haystack)
+    let i = len
+    let stripping_done = 0
+    while i >= 0
+        let ch = strpart(a:haystack, i, 1)
+        let ch2 = ch
+        if stripping_done == 0
+            if ch == "\t"
+                let ch2 = ''
+            elseif ch == ' '
+                let ch2 = ''
+            else
+                let stripping_done = 1
+            endif
+        endif
+        let result = ch2 . result
+        let i = i - 1
+    endwhile
+    return result
+endfunction
+
+
+function! s:ReverseString(input_string)
+    return join(reverse(split(a:input_string, '.\zs')), '')
 endfunction
 
 
@@ -173,7 +227,10 @@ function! s:OneLine(oneLine)
     " Make sure that the line is stripped first.
     " Then, adds a new line character to this line.
     " :help expr-quote
-    let oneLine2 = s:Strip(a:oneLine) . "\r"
+    " Using RStrip() instead of Strip().
+    " Strip() would left align everything, even the function definitions
+    " in the before lines, which causes problems obviously.
+    let oneLine2 = s:RStrip(a:oneLine) . "\r"
     return oneLine2
 endfunction
 
