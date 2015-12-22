@@ -248,7 +248,7 @@ let g:pyinvim_gotolinewhendone = '10'
     let g:pyinvim_before_lines = pyinvim_before_lines
 
     let pyinvim_after_lines = []
-    call add (pyinvim_after_lines, 'print "# done"')
+    call add(pyinvim_after_lines, 'print "# done"')
     let g:pyinvim_after_lines = pyinvim_after_lines
 
     let g:pyinvim_gotolinewhendone = 'start'
