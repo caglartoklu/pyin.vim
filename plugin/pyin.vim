@@ -1,27 +1,33 @@
 " -*- vim -*-
 " FILE: pyin.vim
 " PLUGINTYPE: plugin
-" DESCRIPTION: Executes Python code in Vim buffers and insert its output.
+" DESCRIPTION: Unobtrusive Python buffer execution and linting commands.
 " HOMEPAGE: https://github.com/caglartoklu/pyin.vim
 " LICENSE: https://github.com/caglartoklu/pyin.vim/blob/master/LICENSE
 " AUTHOR: caglartoklu
 
+" Recommended:
+" au BufEnter,BufNew *.py nnoremap <buffer> <F5> : call pyin#PyRunBuffer()<cr>
+" au BufEnter,BufNew *.py nnoremap <buffer> <F8> : call pyin#Pylint()<cr>
+" au BufEnter,BufNew *.py nnoremap <buffer> <F1> : call pyin#PyDoc()<cr>
 
-if exists('g:loaded_python_inline') || &cp
+" TODO: 5 define F9 (as in Spyder) as execute and append in visual mode:
+" draft:
+" vnoremap <F9> : exec 'PivExecuteAndAppend'<cr>
+
+" TODO: 5 write a healthcheck function using vim's executable() function.
+" TODO: 5 Python 2.x without -m compatibility
+
+
+
+if exists('g:loaded_pyinvim') || &cp
     " If it already loaded, do not load it again.
     finish
 endif
 
 
 " mark that plugin loaded
-let g:loaded_python_inline = 1
-
-
-" commands exposed
-command! -range PyinvimExecuteAndAppend :
-    \call s:ExecuteAndAppendPython(<f-line1>,<f-line2>)
-command! -range PyinvimExecuteAndReplace :
-    \call s:ExecuteAndReplacePython(<f-line1>,<f-line2>)
+let g:loaded_pyinvim = 1
 
 
 function! s:SetPyinvimSettings()
@@ -71,7 +77,35 @@ function! s:SetPyinvimSettings()
     if !exists('g:pyinvim_gotolinewhendone')
         let g:pyinvim_gotolinewhendone = 'start'
     endif
+
+    " if !exists('g:pyinvim_cmd_spyonde')
+    "     let g:pyinvim_cmd_spyonde = g:pyinvim_interpreter . ' -m spyonde '
+    " endif
+
+    if !exists('g:pyinvim_cmd_pylint')
+        let g:pyinvim_cmd_pylint = g:pyinvim_interpreter . ' -m pylint '
+    endif
+
+    if !exists('g:pyinvim_cmd_pep8')
+        let g:pyinvim_cmd_pep8 = g:pyinvim_interpreter . ' -m pycodestyle '
+    endif
+
+    if !exists('g:pyinvim_cmd_autopep8')
+        let g:pyinvim_cmd_autopep8 = g:pyinvim_interpreter . ' -m autopep8 '
+    endif
+
+    if !exists('g:pyinvim_cmd_vulture')
+        let g:pyinvim_cmd_vulture = g:pyinvim_interpreter . ' -m vulture '
+    endif
+
+    if !exists('g:pyinvim_cmd_pydoc')
+        let g:pyinvim_cmd_pydoc = g:pyinvim_interpreter . ' -m pydoc '
+    endif
+
 endfunction
+
+" Define the settings once.
+call s:SetPyinvimSettings()
 
 
 function! s:GetTempFileNameForSource()
@@ -168,11 +202,6 @@ function! s:RStrip(haystack)
         let i = i - 1
     endwhile
     return result
-endfunction
-
-
-function! s:ReverseString(input_string)
-    return join(reverse(split(a:input_string, '.\zs')), '')
 endfunction
 
 
@@ -325,24 +354,60 @@ function! s:GotoLine(lineStart2, lineFinish2)
 endfunction
 
 
-function! s:ExecuteAndAppendPython(lineStart, lineFinish)
+function! pyin#ExecuteAndAppendPython(lineStart, lineFinish)
     " Execute the selection with the Python interpreter,
     " and append the output to the text editing area.
-    let codeAsList = getline(a:lineStart, a:lineFinish)
-    let outputAsList = pyin#RunPythonCode(codeAsList)
-    call append(a:lineFinish, outputAsList)
 
-    let lineStart2 = a:lineStart
-    " the last line of the final state when the operation is done.
-    let lineFinish2 = a:lineStart + len(codeAsList) + len(outputAsList)
-    call s:GotoLine(lineStart2, lineFinish2)
+    let l1 = a:lineStart
+    let l2 = a:lineFinish
+    let whole_buffer_used = 0
+    let last_linenr = line("$")
+    let cur_linenr = line(".")
+    if l1 == l2
+        let whole_buffer_used = 1
+        " if no line is selected or 1 line is selected,
+        " behave as all of the buffer is selected.
+        let l1 = 1
+        let l2 = last_linenr
+    endif
+    let codeAsList = getline(l1, l2)
+
+    let outputAsList = pyin#RunPythonCode(codeAsList)
+
+    if whole_buffer_used == 1
+        call append(last_linenr, outputAsList)
+        " cursor, [buffer, linenr, colnr, off]
+        call setpos(".", [0, last_linenr, 1, 0])
+    else
+        call append(a:lineFinish, outputAsList)
+        let lineStart2 = a:lineStart
+        " the last line of the final state when the operation is done.
+        let lineFinish2 = a:lineStart + len(codeAsList) + len(outputAsList)
+        call s:GotoLine(lineStart2, lineFinish2)
+    endif
 endfunction
 
+command! -range PivExecuteAndAppend : call pyin#ExecuteAndAppendPython(<f-line1>,<f-line2>)
 
-function! s:ExecuteAndReplacePython(lineStart, lineFinish)
+
+
+function! pyin#ExecuteAndReplacePython(lineStart, lineFinish)
     " Execute the selection with the Python interpreter,
     " and replace the selection with the output of the code.
-    let codeAsList = getline(a:lineStart, a:lineFinish)
+
+    " TODO: 4 make this one like above
+
+    let l1 = a:lineStart
+    let l2 = a:lineFinish
+    if a:lineStart == a:lineFinish
+        " if no line is selected or 1 line is selected,
+        " behave as all of the buffer is selected.
+        let l1 = 1
+        let l2 = line("$")
+    endif
+    let codeAsList = getline(l1, l2)
+    " cursorpos, [buffer, linenr, colnr, off]"
+
     let outputAsList = pyin#RunPythonCode(codeAsList)
     " Decho outputAsList
 
@@ -359,6 +424,127 @@ function! s:ExecuteAndReplacePython(lineStart, lineFinish)
     call s:GotoLine(lineStart2, lineFinish2)
 endfunction
 
+command! -range PivExecuteAndReplace : call pyin#ExecuteAndReplacePython(<f-line1>,<f-line2>)
 
-" Define the settings once.
-call s:SetPyinvimSettings()
+
+
+function! pyin#MakePile()
+    " TODO: 5 locate makepile.py first.
+    " is it in the file's folder or current folder?
+    let cmd = '!python makepile.py'
+    exec cmd
+endfunction
+
+command! -nargs=0 PivMakePile : call pyin#MakePile()
+command! -nargs=0 MakePile : call pyin#MakePile()
+
+
+
+" TODO: 7 add Spyonde support.
+" function! pyin#Spyonde()
+"     let fullFileName = shellescape(expand("%:p"))
+"     let cmd = '!' . s:Strip(g:pyinvim_cmd_spyonde) . ' ' . fullFileName
+"     exec cmd
+" endfunction
+"
+" command! -nargs=0 PivSpyonde : call pyin#Spyonde()
+
+
+
+function! pyin#PyRunBuffer()
+    let fullFileName = shellescape(expand("%:p"))
+    let cmd = '!' . s:Strip(g:pyinvim_interpreter) . ' ' . fullFileName
+    exec cmd
+endfunction
+
+command! -nargs=0 PivRunBuffer : call pyin#PyRunBuffer()
+
+
+
+function! pyin#Pylint()
+    let fullFileName = shellescape(expand("%:p"))
+    let cmd = '!' . s:Strip(g:pyinvim_cmd_pylint) . ' ' . fullFileName
+    exec cmd
+endfunction
+
+command! -nargs=0 PivPylint : call pyin#Pylint()
+
+
+
+function! pyin#Pep8()
+    let fullFileName = shellescape(expand("%:p"))
+    let cmd = '!' . s:Strip(g:pyinvim_cmd_pep8) . ' ' . fullFileName
+    exec cmd
+endfunction
+
+command! -nargs=0 PivPep8 : call pyin#Pep8()
+
+
+
+function! pyin#AutoPep8()
+    write  " save current buffer.
+    let fullFileName = shellescape(expand("%:p"))
+    let cmd = '!' . s:Strip(g:pyinvim_cmd_autopep8) . ' -i ' . fullFileName
+    exec cmd
+    edit  " reload buffer.
+endfunction
+
+command! -nargs=0 PivAutoPep8 : call pyin#AutoPep8()
+
+
+
+function! pyin#Vulture()
+    let fullFileName = shellescape(expand("%:p"))
+    let cmd = '!' . s:Strip(g:pyinvim_cmd_vulture) . ' ' . fullFileName
+    exec cmd
+endfunction
+
+command! -nargs=0 PivVulture : call pyin#Vulture()
+
+
+
+function! pyin#Redir(cmd)
+  " redirect the output of a Vim or external command into a scratch buffer
+  " https://vi.stackexchange.com/a/16607
+  if a:cmd =~ '^!'
+    execute "let output = system('" . substitute(a:cmd, '^!', '', '') . "')"
+  else
+    redir => output
+    execute a:cmd
+    redir END
+  endif
+  tabnew
+  setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
+  call setline(1, split(output, "\n"))
+  put! = a:cmd
+  put = '----'
+endfunction
+
+" TODO: 6 Add 'Piv' to Redir command.
+" TODO: 6 do we need a command for Redir?
+command! -nargs=1 Redir silent call Redir(<f-args>)
+
+
+
+function! pyin#PyDoc()
+    let token = expand("<cword>")
+    " TODO: 4 if empty, call PyDocInput
+    let cmd = '!' . s:Strip(g:pyinvim_cmd_pydoc) . ' ' . token
+    " call system(cmd)
+    call pyin#Redir(cmd)
+endfunction
+
+command! -nargs=0 PivDoc : call pyin#PyDoc()
+
+
+
+function! pyin#PyDocInput()
+    " https://stackoverflow.com/a/24156676
+    let token = input(">>>")
+    let cmd = '!' . s:Strip(g:pyinvim_cmd_pydoc) . ' ' . token
+    " call system(cmd)
+    call pyin#Redir(cmd)
+endfunction
+
+command! -nargs=0 PivDocInput : call pyin#PyDocInput()
+
