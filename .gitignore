@@ -2,4 +2,8 @@
 *.swp
 tags
 draft
+.draft
+_draft
 private
+.private
+_private
