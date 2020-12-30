@@ -1,6 +1,9 @@
 # pyin.vim
 
-Executes Python code in Vim buffers and insert its output.
+*pyin.vim* provides unobtrusive Python buffer execution and linting commands such as Pylint, PyCodeStyle, AutoPep8 and Vulture and help on cursor word.
+It can also execute Python code in any Vim buffer and insert its output.
+
+The plugin does not get in your way, and does not clash with your key mappings and does not require +Python or anything else in your Vim. It will simply run the Python tools from command line and shows the output. It can easily be used with other Vim plugins for Python.
 
 *pyin.vim* allows you to run Python code pieces and embed its
 output in the buffer. It takes a visual selection of Python code from any type of buffer,
@@ -12,23 +15,68 @@ We already have
 [Execute Python from within current file](http://vim.wikia.com/wiki/Execute_Python_from_within_current_file)
 and it is the inspiration for this plugin.
 
-This plugin does not require `+Python` in Vim,
+Since this plugin does not require `+Python` in Vim,
 (which means the Vim itself does not need to be compiled with Python support)
 so it is possible to use this plugin with [Jython](http://www.jython.org/)
-and [IronPython](http://ironpython.net/) interpreters as well, since it only executes them from command line.
+and [IronPython](http://ironpython.net/) interpreters as well, it only executes them from command line and shows their output.
 So, it is suitable for Vim installations in more restricted environments.
 
-Home page:
-[https://github.com/caglartoklu/pyin.vim](https://github.com/caglartoklu/pyin.vim)
 
 
-# Changelog
+# Commands
 
-See the change log from [git commits](https://github.com/caglartoklu/pyin.vim/commits/master).
+## `PivExecuteAndAppend`
+Takes the Python code, runs it, and appends its output to the buffer.
+
+## `PivExecuteAndReplace`
+Takes the Python code, runs it, and replaces the Python code with its output.
+
+## `PivRunBuffer`
+Runs the file in the buffer with `g:pyinvim_interpreter`.
+This command uses the Python interpreter itself.
+
+## `PivPylint`
+Launches `pylint` installed into `g:pyinvim_interpreter`.
+Pylint is an external tool that needs to be installed separately.
+```bash
+pip install pylint
+```
+
+## `PivPep8`
+Launches `pycodestyle` installed into `g:pyinvim_interpreter`.
+Pycodestyle is an external tool that needs to be installed separately.
+```bash
+pip install pycodestyle
+```
+
+## `PivAutoPep8`
+Saves the buffer and launches `autopep8` installed into `g:pyinvim_interpreter` and reloads the buffer.
+Autopep8 is an external tool that needs to be installed separately.
+```bash
+pip install autopep8
+```
+
+## `PivVulture`
+Launches `vulture` installed into `g:pyinvim_interpreter`.
+Vulture is an external tool that needs to be installed separately:
+```bash
+pip install vulture
+```
+
+## `PivDoc`
+Launches `pydoc` for the word under the cursor.
+The results is displayed in another tab in vim.
+This command uses the `pydoc` which is bundled with Python itself.
+
+## `PivDocInput`
+Asks the user about a keyword and launches `pydoc`.
+This command uses the `pydoc` which is bundled with Python itself.
+
 
 
 # Installation
 
+## Installation of the Plugin
 For [vim-plug](https://github.com/junegunn/vim-plug) users:
 
 ```viml
@@ -52,53 +100,33 @@ For all other users, simply drop the `pyin.vim` file to your
 `plugin` directory.
 
 
+## Installation of the External Python Tools
+```bash
+pip3 install pylint pycodestyle autopep8 vulture
+```
+
 ## Supported Environments
 - [Vim](http://www.vim.org/) (no `+Python` required)
 - [Python](https://www.python.org/) (aka CPython, default)
 - [IronPython](http://ironpython.net/)
 - [Jython](http://www.jython.org/)
-- Tested on Windows 10
-
-
-
-# Commands
-
-## `PivExecuteAndAppend`
-   takes the Python code, runs it, and appends its output to the buffer.
-
-## `PivExecuteAndReplace`
-   takes the Python code, runs it, and replaces the Python code with
-   its output.
-
-## `PivMakePile` and `MakePile`
-Launches `makepile.py` if found.
-Not to be confused with common makefiles.
-
-## `PivRunBuffer`
-Saves the buffer and runs it with `g:pyinvim_interpreter`.
-
-## `PivPylint`
-Launches `pylint` installed into `g:pyinvim_interpreter`.
-
-## `PivPep8`
-Launches `pycodestyle` installed into `g:pyinvim_interpreter`.
-
-## `PivAutoPep8`
-Saves the buffer and launches `autopep8` installed into `g:pyinvim_interpreter` and reloads the buffer.
-
-## `PivVulture`
-Launches `vulture` installed into `g:pyinvim_interpreter`.
-
-## `PivDoc`
-Launches `pydoc` for the word under the cursor.
-The results is displayed in another tab in vim.
-
-## `PivDocInput`
-Asks the user about a keyword and launches `pydoc`.
+- Tested on Windows 10, Neovim, Python 3.7
 
 
 
 # Configuration
+
+## Recommended Mappings
+
+pyin.vim does not define any key mappings by default.
+You can put the following block into your .vimrc file:
+
+```viml
+au BufEnter,BufNew *.py nnoremap <buffer> <F5> : call pyin#PyRunBuffer()<cr>
+au BufEnter,BufNew *.py nnoremap <buffer> <F8> : call pyin#Pylint()<cr>
+au BufEnter,BufNew *.py nnoremap <buffer> <F1> : call pyin#PyDoc()<cr>
+```
+
 ## `g:pyinvim_interpreter`
 The path to the Python interpreter. It can be full path to various
 Python interpreters such as `ipy.exe`.
@@ -115,6 +143,31 @@ default: `''`.
 
 ```viml
 let g:pyinvim_interpreter_options = ''
+```
+
+## `g:pyinvim_cmd_pylint`
+```viml
+let g:pyinvim_cmd_pylint = g:pyinvim_interpreter . ' -m pylint '
+```
+
+## `g:pyinvim_cmd_pep8`
+```viml
+let g:pyinvim_cmd_pep8 = g:pyinvim_interpreter . ' -m pycodestyle '
+```
+
+## `g:pyinvim_cmd_autopep8`
+```viml
+let g:pyinvim_cmd_autopep8 = g:pyinvim_interpreter . ' -m autopep8 '
+```
+
+## `g:pyinvim_cmd_vulture`
+```viml
+let g:pyinvim_cmd_vulture = g:pyinvim_interpreter . ' -m vulture '
+```
+
+## `g:pyinvim_cmd_pydoc`
+```viml
+let g:pyinvim_cmd_pydoc = g:pyinvim_interpreter . ' -m pydoc '
 ```
 
 ## `g:pyinvim_delete_temp_files`
@@ -192,6 +245,10 @@ let g:pyinvim_gotolinewhendone = '10'
     let g:pyinvim_after_lines = pyinvim_after_lines
 
     let g:pyinvim_gotolinewhendone = 'start'
+
+    au BufEnter,BufNew *.py nnoremap <buffer> <F5> : call pyin#PyRunBuffer()<cr>
+    au BufEnter,BufNew *.py nnoremap <buffer> <F8> : call pyin#Pylint()<cr>
+    au BufEnter,BufNew *.py nnoremap <buffer> <F1> : call pyin#PyDoc()<cr>
 " }
 ```
 
@@ -227,9 +284,6 @@ Try this code, which would be more useful:
 for i in range(6):
     print "  i:", i
 ```
-
-![PyinvimExecuteAndAppend1](https://raw.github.com/caglartoklu/pyin.vim/media/images/pyinvim_executeappend.png)
-
 
 ## Example3
 Let's say we have this one, and we want to execute the
@@ -323,6 +377,13 @@ ZeroDivisionError: integer division or modulo by zero
 ```
 
 Simply browse to the temp diretory and inspect the file.
+
+
+
+# Changelog
+
+See the change log from [git commits](https://github.com/caglartoklu/pyin.vim/commits/master).
+
 
 
 # License
