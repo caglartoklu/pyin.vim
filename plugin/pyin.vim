@@ -435,8 +435,8 @@ function! pyin#MakePile()
     exec cmd
 endfunction
 
-command! -nargs=0 PivMakePile : call pyin#MakePile()
-command! -nargs=0 MakePile : call pyin#MakePile()
+" command! -nargs=0 PivMakePile : call pyin#MakePile()
+" command! -nargs=0 MakePile : call pyin#MakePile()
 
 
 
