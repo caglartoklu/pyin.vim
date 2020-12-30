@@ -14,10 +14,9 @@ and it is the inspiration for this plugin.
 
 This plugin does not require `+Python` in Vim,
 (which means the Vim itself does not need to be compiled with Python support)
-and it supports [Jython](http://www.jython.org/)
-and [IronPython](http://ironpython.net/) interpreters as well.
-So, it is suitable for Vim installations in
-more restricted environments.
+so it is possible to use this plugin with [Jython](http://www.jython.org/)
+and [IronPython](http://ironpython.net/) interpreters as well, since it only executes them from command line.
+So, it is suitable for Vim installations in more restricted environments.
 
 Home page:
 [https://github.com/caglartoklu/pyin.vim](https://github.com/caglartoklu/pyin.vim)
@@ -29,6 +28,12 @@ See the change log from [git commits](https://github.com/caglartoklu/pyin.vim/co
 
 
 # Installation
+
+For [vim-plug](https://github.com/junegunn/vim-plug) users:
+
+```viml
+Plug 'caglartoklu/pyin.vim'
+```
 
 For [Vundle](https://github.com/VundleVim/Vundle.vim) users:
 
@@ -52,110 +57,45 @@ For all other users, simply drop the `pyin.vim` file to your
 - [Python](https://www.python.org/) (aka CPython, default)
 - [IronPython](http://ironpython.net/)
 - [Jython](http://www.jython.org/)
-- Tested on Windows 8
+- Tested on Windows 10
 
 
-# Usage
-This plugin defines two main commands:
 
-- `PyinvimExecuteAndAppend`
+# Commands
+
+## `PivExecuteAndAppend`
    takes the Python code, runs it, and appends its output to the buffer.
-- `PyinvimExecuteAndReplace`
+
+## `PivExecuteAndReplace`
    takes the Python code, runs it, and replaces the Python code with
    its output.
 
+## `PivMakePile` and `MakePile`
+Launches `makepile.py` if found.
+Not to be confused with common makefiles.
 
-## Example1
-Let's say we have a buffer with this text.
+## `PivRunBuffer`
+Saves the buffer and runs it with `g:pyinvim_interpreter`.
 
-```python
-print "1"
-print "2"
-```
+## `PivPylint`
+Launches `pylint` installed into `g:pyinvim_interpreter`.
 
-Simply, visual-select them. To do that,
-jump to the first of these two lines in normal mode.
-Select these two lines with `SHIFT-v` (or `v`) and then `j` keys as usual.
+## `PivPep8`
+Launches `pycodestyle` installed into `g:pyinvim_interpreter`.
 
-Now press `:` and enter `PyinvimExecuteAndAppend`.
-The plugin will copy the Python code to a temp file, run it,
-catch its output and append to the buffer.
+## `PivAutoPep8`
+Saves the buffer and launches `autopep8` installed into `g:pyinvim_interpreter` and reloads the buffer.
 
-Note that the type of the buffer does not have to `python`.
-It can be anything, text, rst, or even any other programming
-language, such as Java. The only important thing is, just text.
+## `PivVulture`
+Launches `vulture` installed into `g:pyinvim_interpreter`.
 
+## `PivDoc`
+Launches `pydoc` for the word under the cursor.
+The results is displayed in another tab in vim.
 
-## Example2
-Try this code, which would be more useful:
+## `PivDocInput`
+Asks the user about a keyword and launches `pydoc`.
 
-```python
-for i in range(6):
-    print "  i:", i
-```
-
-![PyinvimExecuteAndAppend1](https://raw.github.com/caglartoklu/pyin.vim/media/images/pyinvim_executeappend.png)
-
-
-## Example3
-Let's say we have this one, and we want to execute the
-3 lines of code inside the `while` loop.
-
-```python
-while keepgoing:  # indent level: 0
-    print "1"     # indent level: 1
-    print "2"     # indent level: 1
-    print "3"     # indent level: 1
-```
-
-So, our selection for the code above is:
-
-```python
-    print "1"     # indent level: 1
-    print "2"     # indent level: 1
-    print "3"     # indent level: 1
-```
-
-Since there are leading whitespace characters,
-it would not work on a Python interpreter.
-
-But, *pyin.vim* aligns the code to the left.
-That is, it actually runs this code:
-
-```python
-print "1"     # indent level: 0
-print "2"     # indent level: 0
-print "3"     # indent level: 0
-```
-
-with success.
-
-
-## Example4
-First, execute this command:
-
-```viml
-let g:pyinvim_interpreter='C:\bin\IronPython\ipy.exe'
-```
-
-It will point the `ipy.exe` (the Python interpreter of IronPython).
-
-Then, run the following code piece:
-
-```python
-import clr
-clr.AddReference("System")
-import System
-System.Console.WriteLine('ddd')
-print dir(System.Console)[0:3]
-```
-
-It will append:
-
-```
-ddd
-['BackgroundColor', 'Beep', 'BufferHeight']
-```
 
 
 # Configuration
@@ -254,6 +194,104 @@ let g:pyinvim_gotolinewhendone = '10'
     let g:pyinvim_gotolinewhendone = 'start'
 " }
 ```
+
+
+
+# Examples about `PivExecuteAndAppend` and `PivExecuteAndReplace`
+
+## Example1
+Let's say we have a buffer with this text.
+
+```python
+print "1"
+print "2"
+```
+
+Simply, visual-select them. To do that,
+jump to the first of these two lines in normal mode.
+Select these two lines with `SHIFT-v` (or `v`) and then `j` keys as usual.
+
+Now press `:` and enter `PyinvimExecuteAndAppend`.
+The plugin will copy the Python code to a temp file, run it,
+catch its output and append to the buffer.
+
+Note that the type of the buffer does not have to `python`.
+It can be anything, text, rst, or even any other programming
+language, such as Java. The only important thing is, just text.
+
+
+## Example2
+Try this code, which would be more useful:
+
+```python
+for i in range(6):
+    print "  i:", i
+```
+
+![PyinvimExecuteAndAppend1](https://raw.github.com/caglartoklu/pyin.vim/media/images/pyinvim_executeappend.png)
+
+
+## Example3
+Let's say we have this one, and we want to execute the
+3 lines of code inside the `while` loop.
+
+```python
+while keepgoing:  # indent level: 0
+    print "1"     # indent level: 1
+    print "2"     # indent level: 1
+    print "3"     # indent level: 1
+```
+
+So, our selection for the code above is:
+
+```python
+    print "1"     # indent level: 1
+    print "2"     # indent level: 1
+    print "3"     # indent level: 1
+```
+
+Since there are leading whitespace characters,
+it would not work on a Python interpreter.
+
+But, *pyin.vim* aligns the code to the left.
+That is, it actually runs this code:
+
+```python
+print "1"     # indent level: 0
+print "2"     # indent level: 0
+print "3"     # indent level: 0
+```
+
+with success.
+
+
+## Example4
+First, execute this command:
+
+```viml
+let g:pyinvim_interpreter='C:\bin\IronPython\ipy.exe'
+```
+
+It will point the `ipy.exe` (the Python interpreter of IronPython).
+
+Then, run the following code piece:
+
+```python
+import clr
+clr.AddReference("System")
+import System
+System.Console.WriteLine('ddd')
+print dir(System.Console)[0:3]
+```
+
+It will append:
+
+```
+ddd
+['BackgroundColor', 'Beep', 'BufferHeight']
+```
+
+
 
 # Guide
 
