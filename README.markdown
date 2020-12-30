@@ -25,50 +25,50 @@ So, it is suitable for Vim installations in more restricted environments.
 
 # Commands
 
-## `PivExecuteAndAppend`
+## `:PivExecuteAndAppend`
 Takes the Python code, runs it, and appends its output to the buffer.
 
-## `PivExecuteAndReplace`
+## `:PivExecuteAndReplace`
 Takes the Python code, runs it, and replaces the Python code with its output.
 
-## `PivRunBuffer`
+## `:PivRunBuffer`
 Runs the file in the buffer with `g:pyinvim_interpreter`.
 This command uses the Python interpreter itself.
 
-## `PivPylint`
+## `:PivPylint`
 Launches `pylint` installed into `g:pyinvim_interpreter`.
 Pylint is an external tool that needs to be installed separately.
 ```bash
 pip install pylint
 ```
 
-## `PivPep8`
+## `:PivPep8`
 Launches `pycodestyle` installed into `g:pyinvim_interpreter`.
 Pycodestyle is an external tool that needs to be installed separately.
 ```bash
 pip install pycodestyle
 ```
 
-## `PivAutoPep8`
+## `:PivAutoPep8`
 Saves the buffer and launches `autopep8` installed into `g:pyinvim_interpreter` and reloads the buffer.
 Autopep8 is an external tool that needs to be installed separately.
 ```bash
 pip install autopep8
 ```
 
-## `PivVulture`
+## `:PivVulture`
 Launches `vulture` installed into `g:pyinvim_interpreter`.
 Vulture is an external tool that needs to be installed separately:
 ```bash
 pip install vulture
 ```
 
-## `PivDoc`
+## `:PivDoc`
 Launches `pydoc` for the word under the cursor.
 The results is displayed in another tab in vim.
 This command uses the `pydoc` which is bundled with Python itself.
 
-## `PivDocInput`
+## `:PivDocInput`
 Asks the user about a keyword and launches `pydoc`.
 This command uses the `pydoc` which is bundled with Python itself.
 
@@ -106,10 +106,8 @@ pip3 install pylint pycodestyle autopep8 vulture
 ```
 
 ## Supported Environments
-- [Vim](http://www.vim.org/) (no `+Python` required)
+- [Vim](http://www.vim.org/) (no `+Python` required, both GVim and Neovim)
 - [Python](https://www.python.org/) (aka CPython, default)
-- [IronPython](http://ironpython.net/)
-- [Jython](http://www.jython.org/)
 - Tested on Windows 10, Neovim, Python 3.7
 
 
@@ -268,7 +266,7 @@ Simply, visual-select them. To do that,
 jump to the first of these two lines in normal mode.
 Select these two lines with `SHIFT-v` (or `v`) and then `j` keys as usual.
 
-Now press `:` and enter `PyinvimExecuteAndAppend`.
+Now press `:` and enter `PivExecuteAndAppend`.
 The plugin will copy the Python code to a temp file, run it,
 catch its output and append to the buffer.
 
