@@ -21,7 +21,9 @@ so it is possible to use this plugin with [Jython](http://www.jython.org/)
 and [IronPython](http://ironpython.net/) interpreters as well, it only executes them from command line and shows their output.
 So, it is suitable for Vim installations in more restricted environments.
 
+![image_of_pyinvim_commands1](https://user-images.githubusercontent.com/2071639/103404673-8def9180-4b65-11eb-9dea-232fba5f1282.png)
 
+![image_of_pylint_execution1](https://user-images.githubusercontent.com/2071639/103404676-921baf00-4b65-11eb-9ec9-59cdb7e8ff3c.png)
 
 # Commands
 
